@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Scan - Campus IMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <script src="config.js"></script>
+</head>
+<body class="bg-gray-50">
+  <nav class="bg-blue-600 text-white p-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Campus IMS - QR Scanner</h1>
+      <div class="space-x-4">
+        <a href="index.html" class="hover:bg-blue-700 px-3 py-2 rounded">Home</a>
+        <a href="scan.html" class="hover:bg-blue-700 px-3 py-2 rounded font-bold">Scan</a>
+        <a href="inventory.html" class="hover:bg-blue-700 px-3 py-2 rounded">Inventory</a>
+        <a href="reports.html" class="hover:bg-blue-700 px-3 py-2 rounded">Reports</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto p-6">
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+      <h2 class="text-3xl font-bold mb-4">QR Code Scanner</h2>
+      <div id="qr-reader" style="width: 100%; max-width: 500px; margin: 0 auto;" class="mb-6"></div>
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+        <p class="text-blue-800">Scan Location QR (TYPE=LOC) or Component QR (TYPE=COMP)</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function onScanSuccess(decodedText) {
+      console.log('Scan:', decodedText);
+      if (decodedText.includes('TYPE=LOC')) {
+        window.location.href = 'transaction.html?location=' + encodeURIComponent(decodedText);
+      } else if (decodedText.includes('TYPE=COMP')) {
+        window.location.href = 'transaction.html?component=' + encodeURIComponent(decodedText);
+      }
+    }
+    const scanner = new Html5QrcodeScanner('qr-reader', {fps: 10, qrbox: {width: 250, height: 250}}, false);
+    scanner.render(onScanSuccess);
+  </script>
+</body>
+</html>
