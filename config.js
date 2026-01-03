@@ -1,6 +1,5 @@
 const CONFIG = {
-  API_BASE_URL: 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
-  DEMO_MODE: false
+ API_BASE_URL: 'https://script.google.com/macros/s/AKfycbxrNebOssJFghg4KH94g5XozyB-w4UYLz6mmwvs68eJKUuWk2DioapupjVoZ_OVXUmvKUEpPWBsVAp9Zq5BKQZeVhJg/usercallback',  DEMO_MODE: false
 };
 
 async function apiGet(path, params = {}) {
