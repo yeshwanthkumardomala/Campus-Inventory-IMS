@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports - Campus IMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="config.js"></script>
+</head>
+<body class="bg-gray-50">
+  <nav class="bg-blue-600 text-white p-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Campus IMS - Reports</h1>
+      <div class="space-x-4">
+        <a href="index.html" class="hover:bg-blue-700 px-3 py-2 rounded">Home</a>
+        <a href="scan.html" class="hover:bg-blue-700 px-3 py-2 rounded">Scan</a>
+        <a href="inventory.html" class="hover:bg-blue-700 px-3 py-2 rounded">Inventory</a>
+        <a href="reports.html" class="hover:bg-blue-700 px-3 py-2 rounded font-bold">Reports</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto p-6">
+    <h2 class="text-3xl font-bold mb-6">Inventory Analytics & Reports</h2>
+    
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-gray-600 text-sm font-semibold mb-2">Total Items</h3>
+        <p class="text-4xl font-bold text-blue-600" id="total-items">0</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-gray-600 text-sm font-semibold mb-2">In Stock</h3>
+        <p class="text-4xl font-bold text-green-600" id="in-stock">0</p>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-gray-600 text-sm font-semibold mb-2">Out of Stock</h3>
+        <p class="text-4xl font-bold text-red-600" id="out-of-stock">0</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-6 mb-6">
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-xl font-bold mb-4">Stock Distribution by Category</h3>
+        <canvas id="categoryChart"></canvas>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="text-xl font-bold mb-4">Location Utilization</h3>
+        <div id="location-stats" class="space-y-3">
+          <p class="text-gray-500">Loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h3 class="text-xl font-bold mb-4">Recent Transactions</h3>
+      <div id="transactions" class="text-gray-500">No recent transactions</div>
+    </div>
+  </div>
+
+  <script>
+    async function loadReports() {
+      try {
+        const data = await apiGet('inventory');
+        if (data.error) throw new Error(data.error);
+        
+        const inStock = data.filter(item => item.QTY > 0).length;
+        const outOfStock = data.length - inStock;
+        
+        document.getElementById('total-items').textContent = data.length;
+        document.getElementById('in-stock').textContent = inStock;
+        document.getElementById('out-of-stock').textContent = outOfStock;
+        
+        const categories = {};
+        data.forEach(item => {
+          const cat = item.CAT || 'Uncategorized';
+          categories[cat] = (categories[cat] || 0) + (item.QTY || 0);
+        });
+        
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: Object.keys(categories),
+            datasets: [{
+              data: Object.values(categories),
+              backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+            }]
+          }
+        });
+      } catch (err) {
+        console.error('Error loading reports:', err);
+      }
+    }
+    
+    loadReports();
+  </script>
+</body>
+</html>
